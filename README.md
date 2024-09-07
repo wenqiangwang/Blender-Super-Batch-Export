@@ -17,6 +17,8 @@ Batch Export button: Press after everything is set up to export your meshes to s
 
 **Suffix:** The same as prefix, but after the rest of the file name.
 
+**Snake Case:** Use "snake_case" file name style
+
 ### Export Settings:
 Export settings are stored in each scene. You can create your own default settings by opening a new file, choosing the settings you want as default, and pressing File > Defaults > Save Startup File.
 

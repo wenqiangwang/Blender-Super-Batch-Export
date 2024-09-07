@@ -2,10 +2,11 @@ import bpy
 from bpy.types import AddonPreferences, PropertyGroup, Operator, Panel
 from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty, PointerProperty, FloatVectorProperty
 import os
+import re
 
 bl_info = {
     "name": "Super Batch Export",
-    "author": "MrTriPie",
+    "author": "Original: MrTriPie; Forked by: wenqiangwang",
     "version": (2, 1, 1),
     "blender": (3, 3, 0),
     "category": "Import-Export",
@@ -89,6 +90,7 @@ def draw_settings(self, context):
     col.prop(settings, 'directory')
     col.prop(settings, 'prefix')
     col.prop(settings, 'suffix')
+    col.prop(settings, 'snake_case')
 
     self.layout.separator()
     col = self.layout.column(align=True)
@@ -195,12 +197,12 @@ class BatchExportPreferences(AddonPreferences):
         name="Addon Location",
         description="Where to put the Batch Export Addon UI",
         items=[
+            ('3DSIDE', "3D Viewport Side Panel (Export Tab)",
+             "Place in the 3D Viewport's right side panel, in the Export Tab"),
             ('TOPBAR', "Top Bar",
              "Place on Blender's Top Bar (Next to File, Edit, Render, Window, Help)"),
             ('3DHEADER', "3D Viewport Header",
              "Place in the 3D Viewport Header (Next to View, Select, Add, etc.)"),
-            ('3DSIDE', "3D Viewport Side Panel (Export Tab)",
-             "Place in the 3D Viewport's right side panel, in the Export Tab"),
         ],
         update=addon_location_updated,
     )
@@ -325,6 +327,10 @@ class EXPORT_MESH_OT_batch(Operator):
         prefix = settings.prefix
         suffix = settings.suffix
         name = prefix + bpy.path.clean_name(itemname) + suffix
+
+        if settings.snake_case:
+            name = convert_to_snake_case(name)
+
         fp = os.path.join(base_dir, name)
 
         # Export
@@ -434,6 +440,11 @@ class BatchExportSettings(PropertyGroup):
     suffix: StringProperty(
         name="Suffix",
         description="Text to put at the end of all the exported file names",
+    )
+    snake_case: BoolProperty(
+        name="Snake Case",
+        description="Should the file name be converted to snake_case if not already?",
+        default=True,
     )
 
     # Export Settings:
@@ -644,5 +655,13 @@ def unregister():
         bpy.utils.unregister_class(VIEW3D_PT_batch_export)
 
 
+def convert_to_snake_case(name):
+    return '_'.join(
+        re.sub('([A-Z][a-z]+)', r' \1',
+        re.sub('([A-Z]+)', r' \1',
+        name.replace('-', ' '))).split()).lower()
+
+
 if __name__ == '__main__':
     register()
+
