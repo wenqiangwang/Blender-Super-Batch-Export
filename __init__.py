@@ -661,8 +661,9 @@ def unregister():
 def convert_to_snake_case(name):
     return '_'.join(
         re.sub('([A-Z][a-z]+)', r' \1',
-        re.sub('([A-Z]+)', r' \1',
-        name.replace('-', ' '))).split()).lower()
+            re.sub('([A-Z]+)', r' \1',
+                re.sub('([0-9]+)', r' \1',
+                    name.replace('-', ' ')))).split()).lower()
 
 
 if __name__ == '__main__':
