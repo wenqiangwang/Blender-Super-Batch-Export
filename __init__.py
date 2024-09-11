@@ -240,6 +240,8 @@ class EXPORT_MESH_OT_batch(Operator):
         objects = view_layer.objects.values()
         if settings.limit == 'SELECTED':
             objects = selection
+        elif settings.limit == 'VISIBLE_AND_RENDER':
+            objects = [x for x in objects if not x.hide_render]
 
         mode = ''
         if obj_active:
@@ -484,6 +486,7 @@ class BatchExportSettings(PropertyGroup):
         items=[
             ("VISIBLE", "Visible", "", 1),
             ("SELECTED", "Selected", "", 2),
+            ("VISIBLE_AND_RENDER", "Visible & Render", "", 3),
         ],
     )
 
